@@ -11,9 +11,10 @@ import {
 } from '@nestjs/common';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
-import { ObjectId } from 'mongoose';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes } from '@nestjs/swagger';
+import { GetTrackDto } from './dto/get-track.dto';
 
 @Controller('/tracks')
 export class TrackController {
@@ -26,14 +27,15 @@ export class TrackController {
       { name: 'audio', maxCount: 1 },
     ]),
   )
+  @ApiConsumes('multipart/form-data')
   create(@UploadedFiles() files, @Body() dto: CreateTrackDto) {
     const { picture, audio } = files;
     return this.trackService.create(dto, picture[0], audio[0]);
   }
 
-  @Get()
-  getAll(@Query('count') count: number, @Query('offset') offset: number) {
-    return this.trackService.getAll(count, offset);
+  @Get('all')
+  getAll(@Query() dto: GetTrackDto) {
+    return this.trackService.getAll(dto.count, dto.offset);
   }
 
   @Get('/search')
@@ -42,12 +44,12 @@ export class TrackController {
   }
 
   @Get(':id')
-  getOne(@Param('id') id: ObjectId) {
+  getOne(@Param('id') id: string) {
     return this.trackService.getOne(id);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: ObjectId) {
+  delete(@Param('id') id: string) {
     return this.trackService.delete(id);
   }
 
@@ -57,7 +59,7 @@ export class TrackController {
   }
 
   @Post('/listen/:id')
-  listen(@Param('id') id: ObjectId) {
+  listen(@Param('id') id: string) {
     return this.trackService.listen(id);
   }
 }
