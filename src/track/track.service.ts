@@ -33,7 +33,7 @@ export class TrackService {
     }
 
     async delete(id: ObjectId): Promise<ObjectId> {
-        const track = await this.trackModel.findByIdAndDelete(id)
+        const track = await this.trackModel.findByIdAndDelete(id);
         return track._id
     }
 
